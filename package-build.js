@@ -53,16 +53,14 @@ exec('npm list -g pkg || npm install -g pkg', (error, stdout, stderr) => {
     const readmeContent = `自动化浏览器工具使用说明
 ====================
 
-1. 首次使用前，请确保已安装Playwright浏览器驱动：
-   npx playwright install
+1. 双击运行auto_d_price.exe启动应用
+   首次运行时会自动安装所需的浏览器组件
 
-2. 运行auto_d_price.exe启动应用
+2. 应用会自动打开浏览器并导航到目标网页
 
-3. 应用会自动打开浏览器并导航到目标网页
+3. 浏览器状态会自动保存在storage目录中
 
-4. 浏览器状态会自动保存在storage目录中
-
-5. 如需关闭应用，请按Ctrl+C或关闭命令行窗口
+4. 如需关闭应用，请按Ctrl+C或关闭命令行窗口
 `;
     
     fs.writeFileSync(readmePath, readmeContent, 'utf8');
