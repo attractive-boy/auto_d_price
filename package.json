@@ -1,0 +1,27 @@
+{
+  "name": "auto_d_price",
+  "version": "1.0.0",
+  "description": "浏览器自动化项目",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "install-browsers": "playwright install",
+    "build": "node package-build.js"
+  },
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "playwright": "^1.42.1",
+    "tesseract.js": "^6.0.1",
+    "xlsx": "^0.18.5"
+  },
+  "bin": "main.js",
+  "pkg": {
+    "assets": [
+      "node_modules/**/*",
+      "storage/**/*"
+    ],
+    "targets": [
+      "node18-win-x64"
+    ]
+  }
+}

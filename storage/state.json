@@ -1,0 +1,122 @@
+{
+  "cookies": [
+    {
+      "name": "NEONB",
+      "value": "J9T0Z6NAMtttcY9y",
+      "domain": "accounts.commerce.naver.com",
+      "path": "/",
+      "expires": 1775872349.277472,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "NAC",
+      "value": "kBcfCIBwsKlNA",
+      "domain": ".naver.com",
+      "path": "/",
+      "expires": 1778898164.280669,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "NACT",
+      "value": "1",
+      "domain": ".naver.com",
+      "path": "/",
+      "expires": 1744424564.281743,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "NNB",
+      "value": "JSGXPYTSQD4GO",
+      "domain": ".naver.com",
+      "path": "/",
+      "expires": 1778903482.280582,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "CBI_SES",
+      "value": "iiJo+20V835/2da8WLeD4nAy9chbKHR/AY6ox+7DRxd4AvIjO1JzaLE0+8ozNr6QnZqR5qtyfxSRJZbiAmp/Qlzrd/o8laJAv1X2DW3efhin+Cjq0SeUAyeV94a+6w058QY4Jx+yadG2sIrB84XVgTuB7dh8sjnAr8gCGo4aR3E3pT+1dKRpKSPvxRlxlXOzLBi3LezN8iKm+qlGA12x6o798MRAaC72658j85O5W1Fi1aCJwKv1USIDHfNzK20ZKEkOMWFrbIN+dm7dq7Jck3XzkpaKw9rfGdMWG6Y0HdlwjXGA1HRnd184KEXWK/WLd8ZXxjI5LHvocDA6og8GT7l1iNOpKiaribMsuQ3oEDkmczmnHUCO7OY1eSMWuS1vZ7LfXVksp+Gm/MsedoeKQklhmXbGO3u4yZ+HZLHeVpMRKSsYjaA4ARRM/uJyGPOiGjUcgHLGd55gD52T2IdffA==",
+      "domain": ".naver.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CBI_CHK",
+      "value": "\"r5V0mf9uRUZHZ/vmLGy3ez7f4/k4aqWXL5o03eN68fqjw9WTE6zKd5oiPe5k59uXACgJOFtGesRWyoKrJjLJS8CI4yLVyypGYOlYohjKsEsZORraL3cxEVbOaI53OjMaK+FnuD3mwIO6kXMxODEtV7vx2kxxwNtXa+ygrSbVEEY=\"",
+      "domain": ".naver.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "BUC",
+      "value": "W-V-Mqbket2KBFRB6zTpzR64u3TeHTcQbRJqlFMAluw=",
+      "domain": ".naver.com",
+      "path": "/",
+      "expires": 1778903482.280649,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "NSI",
+      "value": "Ed1mhPi9jq2pHEQl6emOrp4exp6apr2bT2ucS0vV",
+      "domain": ".smartstore.naver.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "kit.session",
+      "value": "AD819BBF1691AFD5FED61F099319232868A81D37BF44A9F4C93A22F9FB6CDFC7C570A75DFAEEF27DAB2D5381BB7E0598B1C833729A827618ED24D70BF4130F9409694CE1FA0CD3AC3796A0AA35C1F8CCF6CF4A225F3610E8DCD4F00E5D069662254D1FD7D6DB47880150D4A12A42B1732D5224543D026FCBDAD7FFE167237DE195689D4E3FD27028A8F54C2781D438033CC5D36E249951DDADFC615F793DCDA8274102296F544581A5278C27FF0288DBF9635082DABAFAC42CF6C382540F552A7268A53DBEBC2FB1E761F62F831D3143C4D90A8EEBFE7B787AF777197698AF67AC204EBD5228B5BA5DD9458D9BAA53487C18F7058A29408A442070444F5ED39F08B382F9C72D67F3FE49CAD4210A82FC14A9F90DC1B9F35A6E913557A7C4E92084AA339F3D2DB3213D0B8A6E22EE6AFB2B76CF0D3515EC26B89D046010F3CF286C12084EAF12B6A734909188F8A7D719BF904EA07FC40BE762CD42D52BBCDCCA33F29BC3255278C6C376F1981E1D4B1B341D6654D64AD537578B9A2C0343EED6FD59C48F115D8EB520EB18B38D2848A68D666225339DCCFE69A316BC0A6C9290B8E70E9070EC4FDC863086B9F98A2EB052878875A0417FEE9FE32436695A90F4640A35C80BC54F1C559174EAB5E89B6773C6BCD058BFAB1EA3C61D0E11A8357BC5045BED44E7C6DD686676553E9FC0360DA1208FF9AC783A3088B8E6C3532A4E4AFA8251726E0DE3189D830E590014E9B49F7053F5DC605F5F26378F8342F1EFD6813ECE3E148BD66A8F1E0D2DA4D5ACFA36FE078FE8402C573E%26id%3D1",
+      "domain": "center.shopping.naver.com",
+      "path": "/",
+      "expires": 1744425461.724738,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Strict"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://sell.smartstore.naver.com",
+      "localStorage": [
+        {
+          "name": "glad_loader_policy_info",
+          "value": "{\"regDate\":\"2025-04-11T02:05:33.979Z\",\"data\":{\"versionInfo\":{\"policyVersion\":\"250312.01\",\"loaderVersion\":\"1.4.1\",\"sdkVersion\":\"2.37.0\"},\"sdkInfo\":{\"latestRatio\":1,\"config\":{}},\"sentryInfo\":{\"enableSentry\":false,\"config\":{\"sampleRate\":0.001}}}}"
+        },
+        {
+          "name": "ls",
+          "value": "JSGXPYTSQD4GO"
+        }
+      ]
+    },
+    {
+      "origin": "https://accounts.commerce.naver.com",
+      "localStorage": [
+        {
+          "name": "i18nextLng",
+          "value": "jp"
+        },
+        {
+          "name": "ls",
+          "value": "JSGXPYTSQD4GO"
+        }
+      ]
+    }
+  ]
+}
