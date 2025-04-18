@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node main.js",
     "install-browsers": "playwright install",
-    "build": "node package-build.js"
+    "build": "pkg main.js --targets node18-win-x64 --output auto_d_price.exe"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
@@ -18,10 +18,20 @@
   "pkg": {
     "assets": [
       "node_modules/**/*",
-      "storage/**/*"
+      "storage/**/*",
+      "run/**/*",
+      "node_modules/playwright-core/.local-browsers/**/*"
     ],
     "targets": [
       "node18-win-x64"
-    ]
+    ],
+    "outputPath": "dist",
+    "mountpoints": [
+      ["storage", "./storage"],
+      ["run", "./run"]
+    ],
+    "scripts": {
+      "preinstall": "mkdir -p storage run"
+    }
   }
 }

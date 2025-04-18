@@ -6,11 +6,15 @@ const CryptoJS = require('crypto-js'); // 引入加密库
 
 (async () => {
     // 创建浏览器实例
-    const browser = await chromium.launch({ headless: false });
+    const browser = await chromium.launch({ 
+        headless: false,
+        executablePath: './ms-playwright/chromium-1161/chrome-win/chrome.exe'  // 打包需要放出来
+     });
 
     // 创建上下文并加载保存的状态
+    const storagePath = path.resolve(process.cwd(), 'storage/state.json');
     const context = await browser.newContext({
-        storageState: './storage/state.json'
+        storageState: storagePath
     });
 
     // 创建页面
@@ -39,7 +43,7 @@ const CryptoJS = require('crypto-js'); // 引入加密库
         // 等待进入dashboard页面
         await page.waitForURL('**/home/dashboard');
         // 保存状态
-        await context.storageState({ path: './storage/state.json' });
+        await context.storageState({ path: storagePath });
 
     }
     if (page.url().includes('/login')) {
@@ -53,7 +57,7 @@ const CryptoJS = require('crypto-js'); // 引入加密库
         await page.waitForURL('**/home/dashboard');
 
         // 保存状态
-        await context.storageState({ path: './storage/state.json' });
+        await context.storageState({ path: storagePath });
     }
     if (page.url().includes('/certify')) {
         await new Promise(resolve => {
@@ -66,15 +70,12 @@ const CryptoJS = require('crypto-js'); // 引入加密库
         // 等待进入dashboard页面
         await page.waitForURL('**/home/dashboard');
         // 保存状态
-        await context.storageState({ path: './storage/state.json' });
+        await context.storageState({ path: storagePath });
     }
 
-    //检查当前目录是否有某个文件夹
+    //使用预定义的目录结构
     const folderName = 'run';
-    const folderPath = path.join(__dirname, folderName);
-    if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath);
-    }
+    const folderPath = path.resolve(process.cwd(), folderName);
 
     //   查找文件夹下所有的excel文件
     const excelFiles = fs.readdirSync(folderPath).filter(file => file.endsWith('.xlsx'));
