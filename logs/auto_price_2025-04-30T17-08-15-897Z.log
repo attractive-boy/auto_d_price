@@ -1,0 +1,6 @@
+[2025-04-30T17:08:15.898Z] 程序启动
+[2025-04-30T17:08:15.899Z] 启动浏览器
+[2025-04-30T17:08:15.912Z] 发生错误: browserType.launch: Failed to launch chromium because executable doesn't exist at ./ms-playwright/chromium-1161/chrome-win/chrome.exe
+[2025-04-30T17:08:15.913Z] 无法获取页面进行截图: context is not defined
+[2025-04-30T17:08:15.913Z] 按任意键退出...
+[2025-04-30T17:08:23.105Z] 程序退出

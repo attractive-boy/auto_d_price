@@ -1,0 +1,10 @@
+[2025-04-30T16:51:27.057Z] 程序启动
+[2025-04-30T16:51:27.058Z] 启动浏览器
+[2025-04-30T16:51:29.712Z] 加载浏览器状态
+[2025-04-30T16:51:30.312Z] 打开dashboard页面
+[2025-04-30T16:51:47.341Z] 发生错误: Target page, context or browser has been closed
+Call log:
+[2m  - navigating to "https://sell.smartstore.naver.com/#/home/dashboard", waiting until "load"[22m
+
+[2025-04-30T16:51:47.341Z] 无法获取页面进行截图: context is not defined
+[2025-04-30T16:51:47.341Z] 按任意键退出...

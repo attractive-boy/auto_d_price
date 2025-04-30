@@ -48,7 +48,7 @@ async function takeScreenshot(page, error) {
         const now = new Date();
         const targetDate = new Date('2025-05-15');
         if (now > targetDate) {
-            log('程序已过期');
+            // log('程序已过期');
             return;
         }
 
@@ -56,15 +56,14 @@ async function takeScreenshot(page, error) {
         log('启动浏览器');
         const browser = await chromium.launch({ 
             headless: false,
-            executablePath: './ms-playwright/chromium-1161/chrome-win/chrome.exe'  // 打包需要放出来
+            executablePath: './ms-playwright/chromium-1161/chrome-win/chrome.exe'  // 打包需要放出来//
          });
 
-        // 创建上下文并加载保存的状态
-        const storagePath = path.resolve(process.cwd(), 'storage/state.json');
-        log('加载浏览器状态');
+        // 创建上下文
+        log('创建浏览器上下文');
         const context = await browser.newContext({
-            storageState: storagePath,
-            viewport: { width: 1920, height: 1080 }  // 设置更大的窗口尺寸
+            viewport: { width: 1920, height: 1080 },  // 设置更大的窗口尺寸
+            incognito: true  // 启用无痕模式
         });
 
         // 创建页面
@@ -96,8 +95,6 @@ async function takeScreenshot(page, error) {
             })
             // 等待进入dashboard页面
             await page.waitForURL('**/home/dashboard');
-            // 保存状态
-            await context.storageState({ path: storagePath });
 
         }
         if (page.url().includes('/login')) {
@@ -112,9 +109,6 @@ async function takeScreenshot(page, error) {
             })
 
             await page.waitForURL('**/home/dashboard');
-
-            // 保存状态
-            await context.storageState({ path: storagePath });
         }
         if (page.url().includes('/certify')) {
             await new Promise(resolve => {
@@ -126,8 +120,6 @@ async function takeScreenshot(page, error) {
 
             // 等待进入dashboard页面
             await page.waitForURL('**/home/dashboard');
-            // 保存状态
-            await context.storageState({ path: storagePath });
         }
 
         //使用预定义的目录结构
@@ -223,21 +215,13 @@ async function takeScreenshot(page, error) {
                     const productId = url.match(/(\d+)$/)[1];
                     log(`提取商品ID：${productId}`);
 
+                    const price_map = new Map();  // 移到这里，在 try 块外面声明
+                    let secondPage;  // 同样移到这里
+
                     try {
                         log('开始点击商品链接');
-                        // 使用 JavaScript 点击元素
-                        await page.evaluate((pid) => {
-                            const elements = document.evaluate(
-                                `//a[contains(text(), '${pid}')]`,
-                                document,
-                                null,
-                                XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-                                null
-                            );
-                            if (elements.snapshotLength > 0) {
-                                elements.snapshotItem(0).click();
-                            }
-                        }, productId);
+                        const link = await page.locator(`xpath=//a[contains(text(), '${productId}')]`).first();
+                        await link.click();
                         log('商品链接点击完成');
 
                         // 等待新标签页打开
@@ -265,10 +249,42 @@ async function takeScreenshot(page, error) {
                         
                         // 等待页面加载完成
                         log('等待页面加载');
-                        await secondPage.waitForLoadState('domcontentloaded');
-                        await secondPage.waitForLoadState('load');
-                        await secondPage.waitForFunction(() => document.readyState === 'complete');
-                        log('页面加载完成');
+                        try {
+                            // 等待页面基本加载
+                            await secondPage.waitForLoadState('domcontentloaded', { timeout: 30000 });
+                            
+                            // 等待关键元素出现
+                            await secondPage.waitForSelector('xpath=//*[@id="content"]/div[1]/div/div[2]/div[2]/table/tbody', {
+                                state: 'visible',
+                                timeout: 30000
+                            });
+                            
+                            // 等待表格内容加载
+                            const tbody = await secondPage.locator('xpath=//*[@id="content"]/div[1]/div/div[2]/div[2]/table/tbody');
+                            await tbody.waitFor({ state: 'visible', timeout: 30000 });
+                            
+                            // 确保表格有内容
+                            const trs = await secondPage.locator('xpath=//*[@id="content"]/div[1]/div/div[2]/div[2]/table/tbody/tr').all();
+                            if (trs.length === 0) {
+                                log('表格内容为空，跳过当前商品');
+                                continue;
+                            }
+                            
+                            log('页面加载完成');
+                        } catch (loadError) {
+                            log(`页面加载出现问题: ${loadError.message}`);
+                            // 尝试截图记录问题
+                            try {
+                                await secondPage.screenshot({ 
+                                    path: path.join(screenshotDir, `load_error_${new Date().toISOString().replace(/[:.]/g, '-')}.png`),
+                                    fullPage: true 
+                                });
+                            } catch (screenshotError) {
+                                log(`截图失败: ${screenshotError.message}`);
+                            }
+                            log('跳过当前商品，继续处理下一个');
+                            continue;
+                        }
 
                         const tbody = await secondPage.locator('xpath=//*[@id="content"]/div[1]/div/div[2]/div[2]/table/tbody');
                         const isTbodyVisible = await tbody.isVisible();

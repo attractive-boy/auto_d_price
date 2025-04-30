@@ -1,0 +1,10 @@
+[2025-04-30T15:56:17.130Z] 程序启动
+[2025-04-30T15:56:17.131Z] 启动浏览器
+[2025-04-30T15:56:18.118Z] 加载浏览器状态
+[2025-04-30T15:56:18.513Z] 打开dashboard页面
+[2025-04-30T15:56:20.330Z] 发生错误: page.goto: net::ERR_PROXY_CONNECTION_FAILED at https://sell.smartstore.naver.com/#/home/dashboard
+Call log:
+[2m  - navigating to "https://sell.smartstore.naver.com/#/home/dashboard", waiting until "load"[22m
+
+[2025-04-30T15:56:20.331Z] 无法获取页面进行截图: context is not defined
+[2025-04-30T15:56:20.331Z] 按任意键退出...
