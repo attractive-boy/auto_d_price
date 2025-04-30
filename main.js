@@ -390,7 +390,12 @@ async function takeScreenshot(page, error) {
                             
                             log(`调价完成，新价格：${final_price}`);
                         } else {
-                            log('当前价格已经是最低，无需调价');
+                            //判断是不是只比最低价低10元
+                            if (Number(min_price) - Number(local_price) > 10) {
+                                //执行调价，增加价格到最低价 - 10
+                            } else {
+                                
+                            }
                         }
                     } catch (e) {
                         log(`处理商品时发生错误：${e.message}`);
