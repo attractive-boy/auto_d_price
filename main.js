@@ -302,7 +302,7 @@ async function takeScreenshot(page, error) {
                             }
                         }
 
-                        const local_shop_name = "한빛2020";
+                        const local_shop_name = "극락도상품점";
                         const local_price = price_map.get(local_shop_name);
                         log(`本地店铺 ${local_shop_name} 的价格：${local_price}`);
                         
