@@ -1,0 +1,10 @@
+[2025-05-16T04:45:44.037Z] 程序启动
+[2025-05-16T04:45:44.428Z] 启动浏览器
+[2025-05-16T04:45:45.670Z] 创建浏览器上下文
+[2025-05-16T04:45:45.874Z] 打开dashboard页面
+[2025-05-16T04:45:47.345Z] 发生错误: page.goto: net::ERR_ABORTED; maybe frame was detached?
+Call log:
+[2m  - navigating to "https://sell.smartstore.naver.com/#/home/dashboard", waiting until "load"[22m
+
+[2025-05-16T04:45:47.346Z] 无法获取页面进行截图: context is not defined
+[2025-05-16T04:45:47.346Z] 按任意键退出...

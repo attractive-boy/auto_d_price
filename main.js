@@ -3,17 +3,125 @@ const path = require('path');
 const fs = require('fs');
 const XLSX = require('xlsx');
 const CryptoJS = require('crypto-js'); // 引入加密库
+const mysql = require('mysql2/promise'); // 添加 MySQL 依赖
+const API_KEY = "YOUR_API_KEY";
+
+// 数据库配置
+const dbConfig = {
+    host: '8.155.19.17',
+    port: 12001,  // 添加MySQL默认端口
+    user: 'price',
+    password: '123',
+    database: 'auto_d_price'
+};
+
+const polling = async (fn, delay = 1 * 1000, timeout = 30 * 1000) => {
+    if (!fn) {
+        throw new Error('fn is required')
+    }
+    try {
+        const result = await fn()
+        return result
+    } catch (error) {
+        if (error && 'data' in error) {
+            throw new Error(JSON.stringify(error, null, 2))
+        }
+        if (timeout <= 0) {
+            throw new Error('timeout')
+        }
+        await new Promise((resolve) => {
+            setTimeout(() => {
+                resolve()
+            }, delay)
+        })
+        return polling(fn, delay, timeout - delay)
+    }
+}
+
+function createTask(image_url) {
+    return new Promise((resolve, reject) => {
+        request(
+            {
+                method: "POST",
+                url: "https://techsz.aoscdn.com/api/tasks/visual/external/watermark-remove",
+                headers: {
+                    "X-API-KEY": API_KEY,
+                },
+                formData: {
+                    url: image_url,
+                },
+                json: true
+            },
+            function (error, response) {
+                if (response.body.data) {
+                    resolve(response.body.data.task_id)
+                } else {
+                    reject(response.body)
+                }
+            }
+        );
+    })
+}
+
+function getTaskResult(taskId) {
+    return new Promise((resolve, reject) => {
+        request(
+            {
+                method: "GET",
+                url: `https://techsz.aoscdn.com/api/tasks/visual/external/watermark-remove/${taskId}`,
+                headers: {
+                    "X-API-KEY": API_KEY,
+                },
+                json: true
+            },
+            function (error, response) {
+                if (!response.body.data) reject(response.body)
+                const { progress, state } = response.body.data
+                if (state < 0) reject(response.body)
+                if (progress >= 100) resolve(response.body)
+                reject(null)
+            }
+        );
+    })
+}
+
+// 验证程序使用权限的函数
+async function validateProgramAccess() {
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+
+        // 检查程序是否被禁用
+        const [rows] = await connection.execute(
+            'SELECT is_active, expiry_date FROM program_access WHERE program_id = ?',
+            ['auto_price']
+        );
+
+        await connection.end();
+
+        if (rows.length === 0) {
+            throw new Error();
+        }
+
+        const program = rows[0];
+        if (!program.is_active) {
+            throw new Error();
+        }
+
+        const expiryDate = new Date(program.expiry_date);
+        if (new Date() > expiryDate) {
+            throw new Error();
+        }
+
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
 
 // 创建日志目录
 const logDir = path.resolve(process.cwd(), 'logs');
 if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
-}
-
-// 创建截图目录
-const screenshotDir = path.resolve(process.cwd(), 'screenshots');
-if (!fs.existsSync(screenshotDir)) {
-    fs.mkdirSync(screenshotDir);
 }
 
 // 创建日志文件
@@ -28,36 +136,23 @@ function log(message) {
     logStream.write(logMessage);
 }
 
-// 截图函数
-async function takeScreenshot(page, error) {
-    try {
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const screenshotPath = path.join(screenshotDir, `error_${timestamp}.png`);
-        await page.screenshot({ path: screenshotPath, fullPage: true });
-        log(`错误截图已保存: ${screenshotPath}`);
-        log(`错误信息: ${error.message}`);
-    } catch (screenshotError) {
-        log(`截图失败: ${screenshotError.message}`);
-    }
-}
-
 (async () => {
     try {
         log('程序启动');
-        // 当前时间大于 2025-05-15
-        const now = new Date();
-        const targetDate = new Date('2025-05-15');
-        if (now > targetDate) {
-            // log('程序已过期');
+
+        // 验证程序使用权限
+        const hasAccess = await validateProgramAccess();
+        if (!hasAccess) {
             return;
         }
 
+
         // 创建浏览器实例
         log('启动浏览器');
-        const browser = await chromium.launch({ 
+        const browser = await chromium.launch({
             headless: false,
-            executablePath: './ms-playwright/chromium-1161/chrome-win/chrome.exe'  // 打包需要放出来//
-         });
+            //executablePath: './ms-playwright/chromium-1161/chrome-win/chrome.exe'  // 打包需要放出来//
+        });
 
         // 创建上下文
         log('创建浏览器上下文');
@@ -161,7 +256,7 @@ async function takeScreenshot(page, error) {
 
                     // 随机等待 2-5 秒
                     const waitTime1 = 2000 + Math.random() * 3000;
-                    log(`等待 ${Math.round(waitTime1/1000)} 秒后继续`);
+                    log(`等待 ${Math.round(waitTime1 / 1000)} 秒后继续`);
                     await page.waitForTimeout(waitTime1);
 
                     log('开始打开价格比较页面');
@@ -173,7 +268,7 @@ async function takeScreenshot(page, error) {
 
                     // 随机等待 1-3 秒
                     const waitTime2 = 1000 + Math.random() * 2000;
-                    log(`等待 ${Math.round(waitTime2/1000)} 秒后继续`);
+                    log(`等待 ${Math.round(waitTime2 / 1000)} 秒后继续`);
                     await page.waitForTimeout(waitTime2);
 
                     log(`开始处理商品：${row['상품번호']}`);
@@ -194,7 +289,7 @@ async function takeScreenshot(page, error) {
 
                     // 随机等待 0.5-2 秒
                     const waitTime3 = 500 + Math.random() * 1500;
-                    log(`等待 ${Math.round(waitTime3/1000)} 秒后点击查询`);
+                    log(`等待 ${Math.round(waitTime3 / 1000)} 秒后点击查询`);
                     await page.waitForTimeout(waitTime3);
 
                     // 点击查询
@@ -207,7 +302,7 @@ async function takeScreenshot(page, error) {
 
                     // 随机等待 2-4 秒
                     const waitTime4 = 2000 + Math.random() * 2000;
-                    log(`等待 ${Math.round(waitTime4/1000)} 秒后继续`);
+                    log(`等待 ${Math.round(waitTime4 / 1000)} 秒后继续`);
                     await page.waitForTimeout(waitTime4);
 
                     // 处理url
@@ -237,7 +332,7 @@ async function takeScreenshot(page, error) {
                             retryCount++;
                             log(`等待新标签页，第 ${retryCount} 次尝试`);
                         }
-                        
+
                         const pages = await context.pages();
                         if (pages.length < 2) {
                             log('新标签页打开失败，跳过当前商品');
@@ -246,44 +341,42 @@ async function takeScreenshot(page, error) {
                         secondPage = pages[1];
                         await secondPage.bringToFront();
                         log('切换到新标签页');
-                        
+
                         // 等待页面加载完成
                         log('等待页面加载');
                         try {
                             // 等待页面基本加载
                             await secondPage.waitForLoadState('domcontentloaded', { timeout: 30000 });
-                            
+
                             // 等待关键元素出现
                             await secondPage.waitForSelector('xpath=//*[@id="content"]/div[1]/div/div[2]/div[2]/table/tbody', {
                                 state: 'visible',
                                 timeout: 30000
                             });
-                            
+
                             // 等待表格内容加载
                             const tbody = await secondPage.locator('xpath=//*[@id="content"]/div[1]/div/div[2]/div[2]/table/tbody');
                             await tbody.waitFor({ state: 'visible', timeout: 30000 });
-                            
+
                             // 确保表格有内容
                             const trs = await secondPage.locator('xpath=//*[@id="content"]/div[1]/div/div[2]/div[2]/table/tbody/tr').all();
                             if (trs.length === 0) {
                                 log('表格内容为空，跳过当前商品');
                                 continue;
                             }
-                            
+
                             log('页面加载完成');
                         } catch (loadError) {
                             log(`页面加载出现问题: ${loadError.message}`);
-                            // 尝试截图记录问题
-                            try {
-                                await secondPage.screenshot({ 
-                                    path: path.join(screenshotDir, `load_error_${new Date().toISOString().replace(/[:.]/g, '-')}.png`),
-                                    fullPage: true 
-                                });
-                            } catch (screenshotError) {
-                                log(`截图失败: ${screenshotError.message}`);
-                            }
-                            log('跳过当前商品，继续处理下一个');
-                            continue;
+                            //刷新页面
+                            await secondPage.reload();
+                            //等待页面加载完成
+                            await secondPage.waitForLoadState('domcontentloaded');
+                            await secondPage.waitForLoadState('load');
+                            await secondPage.waitForLoadState('networkidle');
+                            log('页面加载完成');
+                            //检查是否有验证码
+
                         }
 
                         const tbody = await secondPage.locator('xpath=//*[@id="content"]/div[1]/div/div[2]/div[2]/table/tbody');
@@ -293,7 +386,7 @@ async function takeScreenshot(page, error) {
                         if (isTbodyVisible) {
                             const trs = await secondPage.locator('xpath=//*[@id="content"]/div[1]/div/div[2]/div[2]/table/tbody/tr').all();
                             log(`找到 ${trs.length} 个价格记录`);
-                            
+
                             for (const tr of trs) {
                                 const price = await tr.locator('td:nth-child(2) a strong').textContent();
                                 const shop_name = await tr.locator('td:nth-child(1) div a').textContent();
@@ -302,14 +395,14 @@ async function takeScreenshot(page, error) {
                             }
                         }
 
-                        const local_shop_name = "극락도상품점";
+                        const local_shop_name = fs.readFileSync(path.join(process.cwd(), 'shopname', 'name.txt'), 'utf8').trim();
                         const local_price = price_map.get(local_shop_name);
                         log(`本地店铺 ${local_shop_name} 的价格：${local_price}`);
-                        
+
                         // 找到除自己之外的最低价
                         let min_price = Infinity;
                         let min_price_shop = '';
-                        
+
                         for (const [shop_name, price] of price_map) {
                             if (shop_name === local_shop_name) {
                                 log(`跳过本地店铺 ${shop_name}`);
@@ -317,23 +410,23 @@ async function takeScreenshot(page, error) {
                             }
                             const price_num = Number(price);
                             log(`检查店铺 ${shop_name} 的价格：${price_num}`);
-                            
+
                             if (price_num - 10 < Number(row["최저가"])) {
                                 log(`店铺 ${shop_name} 的价格低于最低价限制，跳过`);
                                 continue;
                             }
-                            
+
                             if (price_num < min_price) {
                                 min_price = price_num;
                                 min_price_shop = shop_name;
                                 log(`更新最低价：${min_price} (店铺：${min_price_shop})`);
                             }
                         }
-                        
+
                         if (min_price < Number(local_price)) {
                             log(`发现更低价格：${min_price} (店铺：${min_price_shop})`);
                             log(`当前价格：${local_price}，差价：${Number(local_price) - min_price}`);
-                            
+
                             //执行改价逻辑
                             log('开始执行调价操作');
                             // 从第一个页面提取商品id
@@ -387,14 +480,14 @@ async function takeScreenshot(page, error) {
                             await secondPage.waitForLoadState('networkidle');
                             await secondPage.waitForLoadState('domcontentloaded');
                             await secondPage.waitForLoadState('load');
-                            
+
                             log(`调价完成，新价格：${final_price}`);
                         } else {
                             //判断是不是只比最低价低10元
                             if (Number(min_price) - Number(local_price) > 10) {
                                 //执行调价，增加价格到最低价 - 10
                             } else {
-                                
+
                             }
                         }
                     } catch (e) {
@@ -410,15 +503,7 @@ async function takeScreenshot(page, error) {
         }
     } catch (error) {
         log(`发生错误: ${error.message}`);
-        // 尝试获取当前页面并截图
-        try {
-            const pages = await context.pages();
-            if (pages.length > 0) {
-                await takeScreenshot(pages[0], error);
-            }
-        } catch (screenshotError) {
-            log(`无法获取页面进行截图: ${screenshotError.message}`);
-        }
+
         log('按任意键退出...');
         process.stdin.once('data', () => {
             log('程序退出');

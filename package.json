@@ -9,10 +9,11 @@
     "build": "pkg main.js --targets node18-win-x64 --output auto_d_price.exe"
   },
   "dependencies": {
-    "crypto-js": "^4.2.0",
-    "playwright": "^1.42.1",
+    "crypto-js": "^4.1.1",
+    "playwright": "^1.40.0",
     "tesseract.js": "^6.0.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "mysql2": "^3.6.5"
   },
   "bin": "main.js",
   "pkg": {
